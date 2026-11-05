@@ -1,43 +1,30 @@
 const express = require('express');
-const cors = require('cors');
 const app = express();
-app.use(cors());
-app.use(express.json());
-app.use(express.static('public'));
-
 const PORT = process.env.PORT || 10000;
 
-// === TIKTOK VERIFICATION - DO NOT REMOVE ===
-app.get('/tiktok-developers-site-verification', (req, res) => {
-  res.type('text/plain').send('tiktok-developers-site-verification=nhiUP3zTOtgqUGHaI8D2iDGjxn67xe9k');
+// === TIKTOK VERIFICATION - 100% COVERAGE ===
+const VERIFY_CODE = 'tiktok-developers-site-verification=nhiUP3zTOtgqUGHaI8D2iDGjxn67xe9k';
+const VERIFY_TOKEN = 'nhiUP3zTOtgqUGHaI8D2iDGjxn67xe9k';
+
+app.get('/tiktok-developers-site-verification', (req,res) => res.type('text/plain').send(VERIFY_CODE));
+app.get('/tiktok-developers-site-verification.txt', (req,res) => res.type('text/plain').send(VERIFY_CODE));
+app.get('/.well-known/tiktok-developers-site-verification', (req,res) => res.type('text/plain').send(VERIFY_CODE));
+app.get('/.well-known/tiktok-developers-site-verification.txt', (req,res) => res.type('text/plain').send(VERIFY_CODE));
+
+// TikTok also checks a file named with your token
+app.get(`/${VERIFY_TOKEN}.txt`, (req,res) => res.type('text/plain').send(VERIFY_CODE));
+app.get(`/${VERIFY_TOKEN}`, (req,res) => res.type('text/plain').send(VERIFY_CODE));
+
+app.get('/', (req,res) => {
+  res.send(`<html><head><meta name="tiktok-developers-site-verification" content="${VERIFY_TOKEN}" /></head><body>
+  <h1>Shaya TikTok Bot Live</h1>
+  <p>${VERIFY_CODE}</p>
+  <p><a href="/terms">Terms</a> | <a href="/privacy">Privacy</a></p>
+  </body></html>`);
 });
 
-app.get('/tiktok-developers-site-verification.txt', (req, res) => {
-  res.type('text/plain').send('tiktok-developers-site-verification=nhiUP3zTOtgqUGHaI8D2iDGjxn67xe9k');
-});
+app.get('/terms', (req,res) => res.send('<h1>Terms</h1><p>Shaya TikTok Bot Terms - Contact @ShayaWatchMnelisibot</p>'));
+app.get('/privacy', (req,res) => res.send('<h1>Privacy</h1><p>We collect Telegram ID only. Contact @ShayaWatchMnelisibot</p>'));
+app.get('/callback', (req,res) => res.send('Callback OK'));
 
-app.get('/nhiUP3zTOtgqUGHaI8D2iDGjxn67xe9k.txt', (req, res) => {
-  res.type('text/plain').send('tiktok-developers-site-verification=nhiUP3zTOtgqUGHaI8D2iDGjxn67xe9k');
-});
-// === END VERIFICATION ===
-
-app.get('/', (req,res)=>{
-  res.send('<h1>Shaya Watch Bot Live</h1><p><a href="/terms">Terms</a> | <a href="/privacy">Privacy</a> | <a href="/tiktok-developers-site-verification">TikTok Verify</a></p>');
-});
-
-app.get('/terms', (req,res)=>{
-  res.send(`<h1>Terms - Shaya Bot</h1><p>Last updated: Nov 2026. By using you agree to watch ads for rewards. Must be 13+. Contact: @ShayaWatchMnelisibot on Telegram.</p><p>Website: ${req.protocol}://${req.get('host')}</p>`);
-});
-
-app.get('/privacy', (req,res)=>{
-  res.send(`<h1>Privacy - Shaya Bot</h1><p>We collect Telegram ID, ad count, balance. Monetag SDK may collect device info for ads. No selling data. Deletion via Telegram.</p><p>Website: ${req.protocol}://${req.get('host')}</p>`);
-});
-
-app.get('/callback', (req,res)=>{
-  res.send('<h1>TikTok Callback OK</h1><p>Close window, return to Telegram</p>');
-});
-
-// Your existing API routes keep below...
-app.get('/api/balance', (req,res)=>{ res.json({balance:0}); });
-
-app.listen(PORT, ()=> console.log('Live on '+PORT));
+app.listen(PORT, () => console.log('Live '+PORT));
